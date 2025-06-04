@@ -1,1 +1,40 @@
+Guide to interface sensors or modules via i2c: 
+1. create a .overlay file to introduce information about the address of your sensor/module, speed and label, you can choose which pin to use by defining gpio pins in overlay. 
+EX to write in overlay:
+    &i2c0 {
+    mysensor: mysensor@44{
+        compatible = "i2c-device";
+        reg = <0x44>;
+        label = "MYSENSOR";
+      };
+    };
+2. now, go to main.c, define your i2cnode(sensor) via nodelabel
+EX:
+    #define I2C_NODE DT_NODELABEL(mysensor)
+
+3. define the i2c device tree structure which we will pass in read and write later
+EX: 
+  static const struct i2c_dt_spec i2cperiph = I2C_DT_SPEC_GET(I2C_NODE);
+
+4. define the sensor configration or anything to initialize the sensor also define the receive buffer for the data you receive from the i2c 
+EX: 
+  uint8_t data[6] = {0};
+  uint8_t sensorconfig[1] = {0xFD};
+
+5. check if i2c is ready after which, write the code as per YOUR sensor and its start condition requirnment, write read sequenence and then read sequenece
+EX: 
+  ret = i2c_write_dt(&i2cperiph, sensorconfig, sizeof(sensorconfig));
+  if (ret != 0){printk("sensor config failed/n");}
+  k_msleep(10); //time delay as per the requirnment
+
+  ret = i2c_read_dt(&i2cperiph,data,sizeof(data));
+  if (ret != 0){printk("read failed/n");}
+
+6. convert data in desired format via math and calculate the checksum if needed, then print the data.
+EX: 
+  float t_degC = -45.0f + 175.0f * ((float)t_ticks / 65535.0f);
+  printk("Temperature: %.2f °C\n", t_degC);
+
+
+
 
