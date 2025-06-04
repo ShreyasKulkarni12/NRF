@@ -1,0 +1,11 @@
+LOGGING:
+It is a way of logging the timestamps of the processes of the controller. 
+there are 3 types of logging modes 
+1. deffered
+2. minimal 
+3. full
+there are also types of logging levels, 
+ERROR: Indicates critical errors that may affect system functionality.
+WARNING: Signals potential issues that may not cause immediate failure, but should be addressed.
+INFO: Provides general information about the system's operation.
+DEBUG: Detailed messages for debugging and development purposes. 
