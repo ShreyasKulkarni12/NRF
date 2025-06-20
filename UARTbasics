@@ -1,5 +1,9 @@
 in nRF controllers as almost everything is handled by the Zephyr OS, there is a procedure to use the UART driver
 either by interrupt mechanism(suggested and the best) or the polling method. 
+In prj.conf
+CONFIG_SERIAL=y
+CONFIG_UART_ASYNC_API=y
+In overlay
 we will use the interrupt method, 
 directions -> 
 1. initialize the const struct device *uartperiph = DEVICE_DT_GET(DT_NODELABEL(uart0));
