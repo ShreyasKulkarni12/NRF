@@ -1,0 +1,21 @@
+Steps for simple BLE advertise:
+1. Include two files <zephyr/bluetooth/bluetooth.h> <zephyr/bluetooth/gap.h>
+2. Config Device name and device name Len (Optional, we can advertise anything, its just good practice to tell what device it is via advertising) : 
+  #define DEVICE_NAME CONFIG_BT_DEVICE_NAME
+  #define DEVICE_NAME_LEN (sizeof(DEVICE_NAME) - 1)
+3. Declare advertisment data array : static const struct bt_data ad[] = {`data inside`}
+  The data should be in a specific format inside the ad[] array. 
+  First set advertising flags: BT_DATA_BYTES(BT_DATA_FLAGS, BT_LE_AD_NO_BREDR/BT_LE_AD_GENERAL/BT_LE_AD_LIMITED), {slash for options}
+  Then set actual adv data bytes: BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN)
+  This concludes our advertising data structure.
+4. Declare Scan response Data(Pl. read about difference between scan and advertisment) : static const struct bt_data sd[] = {`data inside`}
+  You can actually declare any data or format inside it but the general practice is to put useful or the actual "data" part in the scan response
+  ex: BT_DATA(BT_DATA_URI, url_data, sizeof(url_data)), 
+  Here, url_data is another array with a url link, data type BT_DATA_URI confirms it. There are 40+ types of "data types" like URI which is used here.
+  Scan response is TOTALLY optional and it is upto the user what to use.
+5. Now we have defined the BLE structure, we shall use APIs to call the BLE and start the BLE, in int main() use:
+  -bt_enable(NULL); <- to enable BLE periph with defined settings. note that the parameter inside is a callback function which can be called when BLE will be enabled
+  it is NULL in our example but any function can be called as a callback when BLE gets enabled.
+  -bt_le_adv_start(BT_LE_ADV_NCONN, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd)); <- start advertising
+  again, i must tell you there are many options instead of the BT_LE_ADV_NCONN (NCONN stands for no connection), also if we are not defining the scan or advertisment 
+  array we can just use NULL instead of the references above.
